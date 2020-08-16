@@ -19,7 +19,7 @@ class Parameter:
         self.predict_T = 3  # 窗口预测时间长度
         self.Heading = 0.15  # 评价函数系数，用作校正权重，分别为角度系数，速度系数，障碍距离系数
         self.Velocity = 1
-        self.buffer_constant = 1  # 与障碍物之间的缓冲间隙
+        self.Obstacle = 1
         self.ob = np.array([[-1, -1],
                             [0, 2],
                             [2, 6],
@@ -42,7 +42,7 @@ class Parameter:
                             [13.0, 13.0]
                             ])
         self.robot_radius = 1
-        self.rObstacle = 1
+        self.buffer_clearance = 1  # 与障碍物之间的缓冲距离
         self.goal = [5, 7]
 
 
@@ -55,9 +55,9 @@ def dynamic_window(x, traj):
 
     # 确保能够及时在障碍物前刹车的最大速度
     break_v = math.sqrt(2 * (dist_to_nearest_obstacle(traj) \
-                             + para.rObstacle) * para.vv)
+                             + para.buffer_clearance) * para.vv)
     break_w = math.sqrt(2 * (dist_to_nearest_obstacle(traj) \
-                             + para.rObstacle) * para.ww)
+                             + para.buffer_clearance) * para.ww)
 
     dw = [max(para.Vmin, vmin), min(para.Vmax, vmax, break_v), \
           max(para.Wmin, wmin), min(para.Wmax, wmax, break_w)]
@@ -125,7 +125,7 @@ def cost(predicted_trajactory):
         obstacle = 1 / r
 
     total_cost = para.Heading * angle_diff + para.Velocity * speed_diff + \
-                 para.buffer_constant * obstacle
+                 para.Obstacle * obstacle
     return total_cost
 
 
