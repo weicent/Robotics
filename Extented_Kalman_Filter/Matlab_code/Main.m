@@ -56,10 +56,12 @@ while time<=simlation_time
     hold on;
     plot(hx_EKF(1,:),hx_EKF(2,:),'-r','LineWidth',2);
     hold on;
+    
     legend('GPS data','Actual Trace','Predicted Trace',...
         'EKF Trace','Location','northoutside',...
         'Orientation','horizontal');
     legend('boxoff')
     grid on;
+    axis equal;
     pause(0.001);
 end 
