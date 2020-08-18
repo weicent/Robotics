@@ -12,14 +12,15 @@ class Parameter:
         self.Wmax = 40 * math.pi / 180  # 角速度
         self.Wmin = -40 * math.pi / 180
         self.vv = 0.2  # m/s**2
-        self.ww = 40 * math.pi / 180  # rad/s**2
+        self.ww = 45 * math.pi / 180  # rad/s**2
+        self.maxpower = 0.7  # 最大扭矩输出角速度
         self.interval_v = 0.01  # 动态取值分辨率
         self.interval_w = 0.1 * math.pi / 180
         self.dt = 0.1  # 时间步长
         self.predict_T = 3  # 窗口预测时间长度
-        self.Heading = 0.15  # 评价函数系数，用作校正权重，分别为角度系数，速度系数，障碍距离系数
-        self.Velocity = 1
-        self.Obstacle = 1
+        self.Heading = 0.07  # 评价函数系数，用作校正权重，分别为角度系数，速度系数，障碍距离系数
+        self.Velocity = 1.2
+        self.Obstacle = 2
         self.ob = np.array([[-1, -1],
                             [0, 2],
                             [2, 6],
@@ -42,7 +43,7 @@ class Parameter:
                             [13.0, 13.0]
                             ])
         self.robot_radius = 1
-        self.buffer_clearance = 1  # 与障碍物之间的缓冲距离
+        self.buffer_clearance = 1.2  # 与障碍物之间的缓冲距离
         self.goal = [5, 7]
 
 
@@ -55,12 +56,12 @@ def dynamic_window(x, traj):
 
     # 确保能够及时在障碍物前刹车的最大速度
     break_v = math.sqrt(2 * (dist_to_nearest_obstacle(traj) \
-                             + para.buffer_clearance) * para.vv)
+                             - para.buffer_clearance) * para.vv)
     break_w = math.sqrt(2 * (dist_to_nearest_obstacle(traj) \
-                             + para.buffer_clearance) * para.ww)
+                             - para.buffer_clearance) * para.ww)
 
-    dw = [max(para.Vmin, vmin), min(para.Vmax, vmax, break_v), \
-          max(para.Wmin, wmin), min(para.Wmax, wmax, break_w)]
+    dw = [max(para.Vmin, vmin, -break_v), min(para.Vmax, vmax, break_v), \
+          max(para.Wmin, wmin, -break_w), min(para.Wmax, wmax, break_w)]
     return dw
 
 
@@ -108,13 +109,12 @@ def cost(predicted_trajactory):
     goal_vector = goal - robot_start
     anl_rob = math.atan2(heading_vector[1], heading_vector[0])
     anl_goal = math.atan2(goal_vector[1], goal_vector[0])
-    if anl_rob * anl_goal >= 0:
+    if anl_rob * anl_goal > 0:
         cost_angle = abs(anl_goal - anl_rob)
     else:
         cost_angle = abs(anl_goal) + abs(anl_rob)
         if cost_angle > math.pi:
             cost_angle = 2 * math.pi - cost_angle
-    angle_diff = abs(math.atan2(math.sin(cost_angle), math.cos(cost_angle)))
     # 速度项
     speed_diff = para.Vmax - predicted_trajactory[-1, 3]
     # 障碍物项
@@ -124,7 +124,7 @@ def cost(predicted_trajactory):
     else:
         obstacle = 1 / r
 
-    total_cost = para.Heading * angle_diff + para.Velocity * speed_diff + \
+    total_cost = para.Heading * cost_angle + para.Velocity * speed_diff + \
                  para.Obstacle * obstacle
     return total_cost
 
@@ -156,6 +156,11 @@ if __name__ == '__main__':
     while True:
         dw = dynamic_window(x, best_traj)
         best_traj, best_u = traj_filter(x, dw)
+        # 防止陷入【前方有障碍物但角度差为0或180度（即最优角度但因为正前方障碍物导致最优速度一直为0）的死循环中】
+        if best_u[0] < 0.1:
+            if abs(best_u[1]) < 0.09 or abs(best_u[1] - math.pi) < 0.09:
+                best_u = [best_u[0], best_u[1] + para.ww * para.maxpower]
+
         x = motion(x, best_u)
         trajactory = np.vstack((trajactory, x))
         # 绘图
