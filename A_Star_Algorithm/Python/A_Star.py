@@ -132,8 +132,8 @@ if __name__ == '__main__':
     '''主程序开始'''
     top_conner = [50, 50]  # 边界上顶点-位置在右上
     bottom_conner = [0, 0]  # 边界下顶点-位置在左下
-    S = [1, 1]  # 起始点
-    E = [49, 49]  # 目标点
+    S = [1, 49]  # 起始点
+    E = [49, 1]  # 目标点
     obstacle_number = 600  # 生成的障碍物坐标数目，越大寻踪难度越大，耗时越久
     obstacle = generate_boundary(S, E, top_conner, bottom_conner, obstacle_number)  # 生成障碍与边界
     OP = []  # 节点的open list
@@ -196,7 +196,7 @@ if __name__ == '__main__':
                     fig = plt.gcf()
                     fig.set_size_inches(12, 8, forward=True)
                     plt.axis('square')
-                    plt.plot(obstacle[:, 0], obstacle[:, 1], 'xk')
+                    plt.plot(obstacle[:, 0], obstacle[:, 1], 'sk')
                     plt.plot(checked[:, 0], checked[:, 1], 'oy')
                     plt.plot(S[0], S[1], '*g')
                     plt.plot(E[0], E[1], '*r')
