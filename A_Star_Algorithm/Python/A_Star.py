@@ -134,7 +134,7 @@ if __name__ == '__main__':
     bottom_conner = [0, 0]  # 边界下顶点-位置在左下
     S = [1, 1]  # 起始点
     E = [49, 49]  # 目标点
-    obstacle_number = 900  # 生成的障碍物坐标数目，越大寻踪难度越大，耗时越久
+    obstacle_number = 600  # 生成的障碍物坐标数目，越大寻踪难度越大，耗时越久
     obstacle = generate_boundary(S, E, top_conner, bottom_conner, obstacle_number)  # 生成障碍与边界
     OP = []  # 节点的open list
     CL = []  # 节点的closed list
