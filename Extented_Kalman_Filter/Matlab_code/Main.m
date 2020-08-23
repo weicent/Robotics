@@ -51,11 +51,8 @@ while time<=simlation_time
     plot(hz(1,:),hz(2,:),'o','Color','[0.3 0.5 0.4]');
     hold on;
     plot(hx_actual(1,:),hx_actual(2,:),'-b','LineWidth',2);
-    hold on;
     plot(hx_Predict(1,:),hx_Predict(2,:),'-k','LineWidth',2);
-    hold on;
     plot(hx_EKF(1,:),hx_EKF(2,:),'-r','LineWidth',2);
-    hold on;
     
     legend('GPS data','Actual Trace','Predicted Trace',...
         'EKF Trace','Location','northoutside',...

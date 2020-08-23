@@ -1,0 +1,3 @@
+Sometimes, the path drawing will collide with the smallest obstacle, which is due to the time step is too large, so when drawing the path by using the node in G matrix, the interpolation for drawing may produce a position that collide with the smallest obstacle, however, the data in G is actually not collide with that obstacle, to solve this problem, just by running the program again to produce a new path plot, or adjust the time step.
+
+Another problem met in the program is that the final pose of the robot cannot contain 0 degree, it can be a value that infinitely trend to 0. This is due to Qnew in the algorithm cannot reaches the value of 0, it can approach to 0 in an infinite level but cannot actually reach 0, this might be a numerical bug in the program.
