@@ -21,6 +21,7 @@ def generate_boundary(S, E, topc, botc, obstacle_number):
         randoby = random.randint(botc[1] + 1, topc[1] - 1)
         dx.append(randobx)
         dy.append(randoby)
+
     boundx = ax + bx + cx + dx
     boundy = ay + by + cy + dy
     bound = np.vstack((boundx, boundy)).T  # 合成边界与障碍物
@@ -130,11 +131,13 @@ class NoPath(Exception):
 
 if __name__ == '__main__':
     '''主程序开始'''
-    top_conner = [50, 50]  # 边界上顶点-位置在右上
-    bottom_conner = [0, 0]  # 边界下顶点-位置在左下
-    S = [1, 49]  # 起始点
-    E = [49, 1]  # 目标点
-    obstacle_number = 600  # 生成的障碍物坐标数目，越大寻踪难度越大，耗时越久
+    top_conner = [60, 60]  # 边界上顶点-位置在右上
+    bottom_conner = [-10, -10]  # 边界下顶点-位置在左下
+    S = [random.randint(bottom_conner[0]+1,top_conner[0]-1),\
+         random.randint(bottom_conner[1]+1,top_conner[1]-1)]#[1, 49]  # 起始点
+    E = [random.randint(bottom_conner[0]+1,top_conner[0]-1),\
+         random.randint(bottom_conner[1]+1,top_conner[1]-1)]#[49, 1]  # 目标点
+    obstacle_number = 1000  # 生成的障碍物坐标数目，越大寻踪难度越大，耗时越久
     obstacle = generate_boundary(S, E, top_conner, bottom_conner, obstacle_number)  # 生成障碍与边界
     OP = []  # 节点的open list
     CL = []  # 节点的closed list
@@ -148,7 +151,7 @@ if __name__ == '__main__':
         try:
             while True:
                 for i in range(len(OP)):  # 循环OP列表中的待检查节点
-                    i = 0  # 不断将i归零，在后续代码中会对OP进行排序，使OP[0]总有最小的H值，以提高寻踪效率
+                    # i = 0  # 不断将i归零，在后续代码中会对OP进行排序，使OP[0]总有最小的H值，以提高寻踪效率
                     node = OP[0]
                     temp = find_neibor(node, obstacle)  # 生成相邻节点
                     if temp == []:

@@ -100,10 +100,10 @@ def dist_to_nearest_obstacle(predicted_trajactory):
     return np.min(r)
 
 
-def cost(predicted_trajactory):
+def cost(predicted_trajectory):
     # 向量夹角判断
-    robot_start = np.array([predicted_trajactory[0, 0], predicted_trajactory[0, 1]])
-    robot_end = np.array([predicted_trajactory[-1, 0], predicted_trajactory[-1, 1]])
+    robot_start = np.array([predicted_trajectory[0, 0], predicted_trajectory[0, 1]])
+    robot_end = np.array([predicted_trajectory[-1, 0], predicted_trajectory[-1, 1]])
     goal = np.array([para.goal[0], para.goal[1]])
     heading_vector = robot_end - robot_start
     goal_vector = goal - robot_start
@@ -116,9 +116,9 @@ def cost(predicted_trajactory):
         if cost_angle > math.pi:
             cost_angle = 2 * math.pi - cost_angle
     # 速度项
-    speed_diff = para.Vmax - predicted_trajactory[-1, 3]
+    speed_diff = para.Vmax - predicted_trajectory[-1, 3]
     # 障碍物项
-    r = dist_to_nearest_obstacle(predicted_trajactory)
+    r = dist_to_nearest_obstacle(predicted_trajectory)
     if r <= para.robot_radius:
         obstacle = float('inf')
     else:
@@ -149,7 +149,7 @@ if __name__ == '__main__':
     # 初始化变量
     para = Parameter()
     x = para.x_init
-    u = para.u_init
+    # u = para.u_init
     trajactory = np.array(x)
     best_traj = np.array((x, x))
     # 开始循环
@@ -158,10 +158,13 @@ if __name__ == '__main__':
         best_traj, best_u = traj_filter(x, dw)
         # 防止陷入【前方有障碍物但角度差为0或180度（即最优角度但因为正前方障碍物导致最优速度一直为0）的死循环中】
         if best_u[0] < 0.1:
-            if abs(best_u[1]) < 0.09 or abs(best_u[1] - math.pi) < 0.09:
+            if abs(best_u[1]) < 0.1:
+                best_u = [best_u[0], best_u[1] - para.ww * para.maxpower]
+            elif abs(best_u[1] - math.pi) < 0.1:
                 best_u = [best_u[0], best_u[1] + para.ww * para.maxpower]
 
         x = motion(x, best_u)
+
         trajactory = np.vstack((trajactory, x))
         # 绘图
         plt.cla()
