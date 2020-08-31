@@ -200,7 +200,7 @@ if __name__ == '__main__':
                     fig.set_size_inches(12, 8, forward=True)
                     plt.axis('square')
                     plt.plot(obstacle[:, 0], obstacle[:, 1], 'sk')
-                    plt.plot(checked[:, 0], checked[:, 1], 'oy')
+                    plt.plot(checked[:, 0], checked[:, 1], 'xy')
                     plt.plot(S[0], S[1], '*g')
                     plt.plot(E[0], E[1], '*r')
                     plt.pause(0.0001)

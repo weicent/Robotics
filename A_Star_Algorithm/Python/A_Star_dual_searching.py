@@ -158,7 +158,7 @@ def draw_plot(close_origin, close_goal, start, end, bound):
     plt.plot(close_origin[:, 0], close_origin[:, 1], 'oy')
     plt.plot(close_goal[:, 0], close_goal[:, 1], 'og')
     plt.plot(bound[:, 0], bound[:, 1], 'sk')
-    plt.plot([start[0], end[0]], [start[1], end[1]], '*r')
+    plt.plot([start[0], end[0]], [start[1], end[1]], 'hr')
     plt.pause(0.0001)
 
 
@@ -245,12 +245,12 @@ if __name__ == '__main__':
 
                 draw_plot(org_cor_array, goa_cor_array, start, end, bound)
 
-        except Break as e:
+        except Break as success:
             path = get_path(origin_close, goal_close, og_intersect[0])
             draw_plot(org_cor_array, goa_cor_array, start, end, bound)
-            plt.plot(path[:, 0], path[:, 1], '-b')
+            plt.plot(path[:, 0], path[:, 1], '-r')
             plt.title('Robot Arrived', size=20, loc='center')
-    except NoPath as e2:
+    except NoPath as fail:
         plt.title('There is no path to goal! Robot&Goal are split by border!', size=20, loc='center')
 
 plt.show()
