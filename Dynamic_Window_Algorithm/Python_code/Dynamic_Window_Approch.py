@@ -102,8 +102,10 @@ def dist_to_nearest_obstacle(predicted_trajactory):
 
 def cost(predicted_trajectory):
     # 向量夹角判断
-    robot_start = np.array([predicted_trajectory[0, 0], predicted_trajectory[0, 1]])
-    robot_end = np.array([predicted_trajectory[-1, 0], predicted_trajectory[-1, 1]])
+    robot_start = np.array(
+        [predicted_trajectory[0, 0], predicted_trajectory[0, 1]])
+    robot_end = np.array(
+        [predicted_trajectory[-1, 0], predicted_trajectory[-1, 1]])
     goal = np.array([para.goal[0], para.goal[1]])
     heading_vector = robot_end - robot_start
     goal_vector = goal - robot_start
